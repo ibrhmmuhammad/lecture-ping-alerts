@@ -1,20 +1,36 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GraduationCap, Users, Bell, Calendar } from 'lucide-react';
 import LecturerDashboard from '@/components/LecturerDashboard';
 import StudentDashboard from '@/components/StudentDashboard';
+import MobileLecturerDashboard from '@/components/MobileLecturerDashboard';
+import MobileStudentDashboard from '@/components/MobileStudentDashboard';
 
 const Index = () => {
   const [userRole, setUserRole] = useState<'lecturer' | 'student' | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (userRole === 'lecturer') {
-    return <LecturerDashboard onBack={() => setUserRole(null)} />;
+    return isMobile ? 
+      <MobileLecturerDashboard onBack={() => setUserRole(null)} /> : 
+      <LecturerDashboard onBack={() => setUserRole(null)} />;
   }
 
   if (userRole === 'student') {
-    return <StudentDashboard onBack={() => setUserRole(null)} />;
+    return isMobile ? 
+      <MobileStudentDashboard onBack={() => setUserRole(null)} /> : 
+      <StudentDashboard onBack={() => setUserRole(null)} />;
   }
 
   return (
